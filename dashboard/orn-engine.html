@@ -7,61 +7,142 @@
   <style>
     body {
       margin:0;
-      font-family: Arial;
-      background:#0f172a;
+      font-family: 'Inter', Arial;
+      background: radial-gradient(circle at top, #0f172a, #020617);
       color:white;
     }
 
     .layout { display:flex; }
 
+    /* SIDEBAR */
     .sidebar {
-      width:220px;
-      background:#020617;
+      width:240px;
+      background:rgba(2,6,23,0.8);
+      backdrop-filter: blur(12px);
       height:100vh;
       padding:20px;
+      border-right:1px solid rgba(255,255,255,0.05);
     }
 
-    .sidebar img { width:50px; }
+    .sidebar img {
+      width:55px;
+      margin-bottom:10px;
+    }
 
+    .menu div {
+      padding:12px;
+      margin-top:10px;
+      border-radius:8px;
+      color:#94a3b8;
+      cursor:pointer;
+      transition:0.3s;
+    }
+
+    .menu div:hover {
+      background:rgba(59,130,246,0.2);
+      color:white;
+    }
+
+    /* MAIN */
     .main {
       flex:1;
-      padding:25px;
+      padding:30px;
     }
 
+    h1 {
+      font-weight:600;
+      letter-spacing:0.5px;
+    }
+
+    /* KPI CARDS */
     .cards {
       display:flex;
-      gap:15px;
-      margin-top:20px;
+      gap:20px;
+      margin-top:25px;
     }
 
     .card {
       flex:1;
-      background:#020617;
-      padding:20px;
-      border-radius:10px;
-      text-align:center;
+      padding:25px;
+      border-radius:16px;
+      background:rgba(255,255,255,0.03);
+      backdrop-filter: blur(10px);
+      border:1px solid rgba(255,255,255,0.05);
+      transition:0.3s;
     }
 
-    canvas { margin-top:30px; }
+    .card:hover {
+      transform:translateY(-3px);
+      box-shadow:0 10px 25px rgba(0,0,0,0.3);
+    }
 
+    .card span {
+      font-size:26px;
+      font-weight:600;
+    }
+
+    canvas {
+      margin-top:40px;
+    }
+
+    /* CHAT PANEL */
     .chat {
       position:fixed;
-      right:20px;
-      bottom:20px;
-      width:320px;
-      height:70%;
-      background:#020617;
-      border-radius:12px;
-      padding:15px;
+      right:25px;
+      bottom:25px;
+      width:340px;
+      height:75%;
+      background:rgba(2,6,23,0.95);
+      backdrop-filter: blur(10px);
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,0.08);
       display:flex;
       flex-direction:column;
+      overflow:hidden;
     }
 
-    .chat-box { flex:1; overflow:auto; }
+    .chat-header {
+      padding:15px;
+      border-bottom:1px solid rgba(255,255,255,0.05);
+      font-weight:600;
+      background:rgba(255,255,255,0.02);
+    }
 
-    .msg { margin:5px; padding:8px; border-radius:6px; }
+    .chat-box {
+      flex:1;
+      padding:10px;
+      overflow:auto;
+    }
+
+    .msg {
+      margin:8px;
+      padding:10px;
+      border-radius:10px;
+      font-size:14px;
+      animation:fadeIn 0.3s ease-in;
+    }
+
     .ai { background:#1e293b; }
     .user { background:#3b82f6; text-align:right; }
+
+    @keyframes fadeIn {
+      from { opacity:0; transform:translateY(5px); }
+      to { opacity:1; transform:translateY(0); }
+    }
+
+    .typing {
+      font-style:italic;
+      color:#94a3b8;
+    }
+
+    #chatInput {
+      padding:12px;
+      border:none;
+      outline:none;
+      background:#020617;
+      color:white;
+      border-top:1px solid rgba(255,255,255,0.05);
+    }
 
   </style>
 </head>
@@ -74,6 +155,10 @@
     <img src="/orn-product/branding/logo.jpg">
     <h3>ORN Product</h3>
     <small>ARA Agents™</small>
+
+    <div class="menu">
+      <div onclick="handleCommand('Launch Thailand')">Dashboard</div>
+    </div>
   </div>
 
   <div class="main">
@@ -93,56 +178,82 @@
 </div>
 
 <div class="chat">
+
+  <div class="chat-header">🤖 ARA Agents</div>
+
   <div class="chat-box" id="chatBox">
-    <div class="msg ai">ARA Coordinator: Ready. Type “Launch Thailand”.</div>
+    <div class="msg ai">ARA Coordinator: Ready to assist. Try “Launch Thailand”.</div>
   </div>
 
-  <input id="chatInput" onkeydown="chatEnter(event)" placeholder="Ask...">
+  <input id="chatInput" placeholder="Ask..." onkeydown="chatEnter(event)">
+
 </div>
 
 <script>
 
-function addMsg(text,type){
+function addMsg(text,type="ai"){
   const box=document.getElementById("chatBox");
   const div=document.createElement("div");
   div.className="msg "+type;
   div.innerText=text;
   box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
+}
+
+function addTyping(){
+  const box=document.getElementById("chatBox");
+  const div=document.createElement("div");
+  div.className="msg typing";
+  div.id="typing";
+  div.innerText="ARA thinking...";
+  box.appendChild(div);
+}
+
+function removeTyping(){
+  const t=document.getElementById("typing");
+  if(t) t.remove();
 }
 
 function chatEnter(e){
   if(e.key==="Enter"){
     const val=document.getElementById("chatInput").value;
     addMsg(val,"user");
-    handleCommand(val);
     document.getElementById("chatInput").value="";
+    handleCommand(val);
   }
 }
 
 function handleCommand(cmd){
 
-  addMsg("ARA Coordinator: Reviewing with team...","ai");
+  addTyping();
 
-  if(cmd.toLowerCase().includes("thailand")){
-    runTeam();
-  }
+  setTimeout(()=>{
+    removeTyping();
+
+    if(cmd.toLowerCase().includes("thailand")){
+      runTeam();
+    } else {
+      addMsg("ARA Coordinator: Can you clarify your request?");
+    }
+
+  },1000);
 }
 
-async function runTeam(){
+function runTeam(){
 
   addMsg("ARA Product Agent: Demand strong in Bangkok.","ai");
 
   setTimeout(()=>{
-    addMsg("ARA Commercial Agent: Margin underperforming in Phuket.","ai");
-  },1000);
+    addMsg("ARA Commercial Agent: Margin under target in Phuket.","ai");
+  },800);
 
   setTimeout(()=>{
-    addMsg("ARA Contracting Agent: Supplier costs above market.","ai");
-  },2000);
+    addMsg("ARA Contracting Agent: Supplier rates above market.","ai");
+  },1600);
 
   setTimeout(()=>{
     runData();
-  },3000);
+  },2400);
 
 }
 
@@ -172,7 +283,7 @@ async function runData(){
 
   drawChart(rows);
 
-  addMsg("ARA Coordinator: Increase pricing + renegotiate suppliers.","ai");
+  addMsg("ARA Coordinator: Recommend pricing uplift + supplier renegotiation.","ai");
 }
 
 function drawChart(rows){
