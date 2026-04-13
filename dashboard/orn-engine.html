@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>ORN Product – ARA Agents Platform</title>
+  <title>ORN Product – ARA Agents</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
     body {
       margin:0;
-      font-family: 'Segoe UI', Arial;
+      font-family: Arial;
       background:#0f172a;
       color:white;
     }
@@ -24,14 +24,11 @@
 
     .sidebar img { width:50px; }
 
-    .sidebar h3 { margin:10px 0 0; }
-
     .menu div {
-      padding:12px;
+      padding:10px;
       margin-top:10px;
-      border-radius:6px;
-      cursor:pointer;
       color:#94a3b8;
+      cursor:pointer;
     }
 
     .menu div:hover {
@@ -42,30 +39,6 @@
     .main {
       flex:1;
       padding:25px;
-    }
-
-    .topbar {
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-    }
-
-    input {
-      padding:10px;
-      width:260px;
-      border-radius:6px;
-      border:none;
-      outline:none;
-    }
-
-    button {
-      padding:10px 15px;
-      background:#3b82f6;
-      color:white;
-      border:none;
-      border-radius:6px;
-      cursor:pointer;
-      box-shadow:0 0 10px rgba(59,130,246,0.5);
     }
 
     .cards {
@@ -83,39 +56,19 @@
       text-align:center;
     }
 
-    .card b {
-      color:#94a3b8;
-      font-size:14px;
-    }
+    canvas { margin-top:30px; }
 
-    .card span {
-      font-size:22px;
-      display:block;
-      margin-top:5px;
-    }
-
-    canvas {
-      margin-top:30px;
-    }
-
-    /* CHAT PANEL */
-    .chat-panel {
+    .chat {
       position:fixed;
       right:20px;
       bottom:20px;
-      width:320px;
-      height:75%;
+      width:300px;
+      height:70%;
       background:#020617;
       border:1px solid #1e293b;
-      border-radius:12px;
+      padding:15px;
       display:flex;
       flex-direction:column;
-      padding:15px;
-    }
-
-    .chat-header {
-      font-weight:bold;
-      margin-bottom:10px;
     }
 
     .chat-box {
@@ -123,29 +76,9 @@
       overflow:auto;
     }
 
-    .chat-msg {
-      margin:8px 0;
-      padding:10px;
-      border-radius:8px;
-      font-size:14px;
-    }
-
-    .ai {
-      background:#1e293b;
-    }
-
-    .user {
-      background:#3b82f6;
-      text-align:right;
-    }
-
-    #chatInput {
-      margin-top:10px;
-      padding:10px;
-      border:none;
-      border-radius:6px;
-      outline:none;
-    }
+    .msg { margin:5px 0; padding:8px; border-radius:6px; }
+    .ai { background:#1e293b; }
+    .user { background:#3b82f6; text-align:right; }
 
   </style>
 </head>
@@ -154,36 +87,24 @@
 
 <div class="layout">
 
-  <!-- SIDEBAR -->
   <div class="sidebar">
-    <img src="../branding/logo.jpg">
+    <img src="/orn-product/branding/logo.jpg">
     <h3>ORN Product</h3>
     <small>ARA Agents™</small>
 
     <div class="menu">
-      <div onclick="runAnalysis()">Dashboard</div>
-      <div>Markets</div>
-      <div>Bookings</div>
-      <div>Suppliers</div>
+      <div onclick="runThailand()">Dashboard</div>
     </div>
   </div>
 
-  <!-- MAIN -->
   <div class="main">
 
-    <div class="topbar">
-      <h1>AI Revenue Intelligence</h1>
-      <div>
-        <input id="command" placeholder="Launch Thailand">
-        <button onclick="runAnalysis()">Run</button>
-      </div>
-    </div>
+    <h1>AI Revenue Intelligence</h1>
 
-    <!-- KPI CARDS -->
     <div class="cards">
-      <div class="card"><b>Total Revenue</b><span id="rev">-</span></div>
-      <div class="card"><b>Total Profit</b><span id="profit">-</span></div>
-      <div class="card"><b>Margin %</b><span id="margin">-</span></div>
+      <div class="card"><b>Revenue</b><br><span id="rev">-</span></div>
+      <div class="card"><b>Profit</b><br><span id="profit">-</span></div>
+      <div class="card"><b>Margin</b><br><span id="margin">-</span></div>
     </div>
 
     <canvas id="chart"></canvas>
@@ -192,90 +113,66 @@
 
 </div>
 
-<!-- CHAT PANEL -->
-<div class="chat-panel">
-
-  <div class="chat-header">🤖 ARA Agents</div>
-
+<div class="chat">
   <div class="chat-box" id="chatBox">
-    <div class="chat-msg ai">
-      ARA Agent: Ready. Ask me about pricing, margin, bookings or suppliers.
-    </div>
+    <div class="msg ai">ARA Agent ready. Type: Launch Thailand</div>
   </div>
 
-  <input id="chatInput" placeholder="Ask ARA Agents..." onkeydown="chatEnter(event)">
-
+  <input id="chatInput" placeholder="Ask..." onkeydown="chatEnter(event)">
 </div>
 
 <script>
 
-function addChat(msg,type="ai"){
-  const box = document.getElementById("chatBox");
-  const div = document.createElement("div");
-  div.className = "chat-msg "+type;
-  div.innerText = msg;
+function addMsg(text,type){
+  const box=document.getElementById("chatBox");
+  const div=document.createElement("div");
+  div.className="msg "+type;
+  div.innerText=text;
   box.appendChild(div);
-  box.scrollTop = box.scrollHeight;
 }
 
 function chatEnter(e){
   if(e.key==="Enter"){
-    const val = document.getElementById("chatInput").value;
-    addChat(val,"user");
+    const val=document.getElementById("chatInput").value;
+    addMsg(val,"user");
 
-    handleCommand(val);
+    if(val.toLowerCase().includes("thailand")){
+      runThailand();
+    }
 
     document.getElementById("chatInput").value="";
   }
 }
 
-function runAnalysis(){
-  const cmd = document.getElementById("command").value;
-  handleCommand(cmd);
-}
-
-function handleCommand(cmd){
-
-  addChat("ARA System: Analysing...");
-
-  if(cmd.toLowerCase().includes("thailand")){
-    runThailand();
-  }
-  else if(cmd.toLowerCase().includes("margin")){
-    addChat("ARA Commercial Agent: Margin issues in Phuket. Recommend renegotiation.");
-  }
-  else if(cmd.toLowerCase().includes("opportunity")){
-    addChat("ARA Revenue Agent: Bangkok pricing uplift opportunity +18%.");
-  }
-  else{
-    addChat("ARA Agent: Can you clarify if this relates to pricing, margin or suppliers?");
-  }
-}
-
 async function runThailand(){
 
-  const res = await fetch("../data/thailand-bookings.csv");
+  addMsg("ARA analysing Thailand data...","ai");
+
+  const res = await fetch("/orn-product/data/thailand-bookings.csv");
   const text = await res.text();
+
   const rows = text.split("\n").slice(1);
 
   let revenue=0, cost=0;
 
   rows.forEach(r=>{
-    const [id,h,c,d,n,rooms,costP,sellP] = r.split(",");
-    revenue += sellP*n*rooms;
-    cost += costP*n*rooms;
+    const c=r.split(",");
+    if(c.length<8) return;
+
+    revenue += c[7]*c[4]*c[5];
+    cost += c[6]*c[4]*c[5];
   });
 
-  const profit = revenue - cost;
+  const profit = revenue-cost;
   const margin = ((profit/revenue)*100).toFixed(1);
 
-  document.getElementById("rev").innerText = "£"+Math.round(revenue);
-  document.getElementById("profit").innerText = "£"+Math.round(profit);
-  document.getElementById("margin").innerText = margin+"%";
+  document.getElementById("rev").innerText="£"+Math.round(revenue);
+  document.getElementById("profit").innerText="£"+Math.round(profit);
+  document.getElementById("margin").innerText=margin+"%";
 
   drawChart(rows);
 
-  addChat("ARA Analyst: Thailand shows strong revenue but margin gaps in Phuket.");
+  addMsg("ARA complete. Phuket shows margin pressure.","ai");
 }
 
 function drawChart(rows){
@@ -283,23 +180,21 @@ function drawChart(rows){
   let labels=[], data=[];
 
   rows.forEach(r=>{
-    const [id,h,c,d,n,rooms,costP,sellP] = r.split(",");
-    labels.push(h);
-    data.push((sellP-costP));
+    const c=r.split(",");
+    if(c.length<8) return;
+    labels.push(c[1]);
+    data.push(c[7]-c[6]);
   });
 
-  const ctx = document.getElementById("chart");
+  const ctx=document.getElementById("chart");
 
   if(window.chart) window.chart.destroy();
 
-  window.chart = new Chart(ctx,{
-    type:'bar',
+  window.chart=new Chart(ctx,{
+    type:"bar",
     data:{
       labels:labels,
-      datasets:[{
-        label:"Margin per Booking (£)",
-        data:data
-      }]
+      datasets:[{label:"Margin",data:data}]
     }
   });
 }
