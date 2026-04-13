@@ -9,15 +9,14 @@
       font-family: 'Inter', Arial;
       height:100vh;
 
-      /* 🔥 YOUR IMAGE */
-      background: url('branding/login-bg.jpg') no-repeat center center/cover;
+      /* ✅ FIXED PATH */
+      background: url('/orn-product/branding/login-bg.jpg') no-repeat center center/cover;
 
       display:flex;
       align-items:center;
       justify-content:center;
     }
 
-    /* DARK OVERLAY FOR PREMIUM LOOK */
     .overlay {
       position:absolute;
       width:100%;
@@ -28,7 +27,6 @@
       );
     }
 
-    /* LOGIN BOX */
     .login-box {
       position:relative;
       background:rgba(2,6,23,0.85);
@@ -43,8 +41,8 @@
       box-shadow:0 20px 40px rgba(0,0,0,0.5);
     }
 
-    .login-box img {
-      width:70px;
+    .logo {
+      width:140px;
       margin-bottom:10px;
     }
 
@@ -104,7 +102,9 @@
 <div class="overlay"></div>
 
 <div class="login-box">
-  <img src="branding/logo.jpg">
+
+  <!-- ✅ FIXED LOGO PATH -->
+  <img src="/orn-product/branding/logo.png" class="logo">
 
   <h2>ORN Product</h2>
   <p>Powered by ARA Agents™</p>
