@@ -1,17 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>ORN Product – AI Contracting Engine</title>
+  <title>ORN Product – AI Revenue Engine</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
     body {
       font-family: Arial;
       background: linear-gradient(to right, #f5f7fa, #e4ecf7);
       padding: 30px;
-    }
-
-    h1 {
-      color: #2c3e50;
     }
 
     .header {
@@ -36,10 +34,6 @@
       border: none;
       border-radius: 6px;
       cursor: pointer;
-    }
-
-    button:hover {
-      background: #1a252f;
     }
 
     .output {
@@ -75,6 +69,10 @@
       font-style: italic;
       color: #555;
     }
+
+    canvas {
+      margin-top: 30px;
+    }
   </style>
 </head>
 
@@ -82,19 +80,19 @@
 
 <div class="header">
   <img src="../branding/logo.jpg" width="60">
-  <h1>ORN Product – AI Contracting Engine</h1>
+  <h1>ORN Product – AI Revenue Engine</h1>
 </div>
 
 <br>
 
-<input id="command" placeholder="Ask ORN e.g. Launch Thailand or Where are we losing money?">
+<input id="command" placeholder="Ask ORN e.g. Launch Thailand">
 <button onclick="runCommand()">Run</button>
 
 <div id="chat"></div>
 
-<div class="output" id="output">
-  <p>Ask a question or launch a market...</p>
-</div>
+<div class="output" id="output"></div>
+
+<canvas id="chart"></canvas>
 
 <script>
 
@@ -102,115 +100,79 @@ function think(message) {
   document.getElementById("chat").innerHTML = message;
 }
 
-function runCommand() {
-  const cmd = document.getElementById("command").value.toLowerCase();
-
-  think("Interesting… analysing that now...");
+async function runCommand() {
+  think("Analysing real data…");
 
   setTimeout(() => {
-
-    if (cmd.includes("thailand")) {
-      runThailand();
-    }
-    else if (cmd.includes("margin") || cmd.includes("losing")) {
-      showMargin();
-    }
-    else if (cmd.includes("opportunities") || cmd.includes("growth")) {
-      showOpportunities();
-    }
-    else if (cmd.includes("suppliers") || cmd.includes("contracts")) {
-      showSuppliers();
-    }
-    else {
-      think("Good question — are you looking at pricing, bookings, or supplier performance?");
-    }
-
+    runThailand();
   }, 1500);
 }
 
-function runThailand() {
-  think("Thailand launched. Reviewing demand, pricing, and supplier performance...");
+async function runThailand() {
+
+  const response = await fetch("../data/thailand-hotels.csv");
+  const text = await response.text();
+  const rows = text.split("\n").slice(1);
+
+  let totalRevenue = 0;
+  let totalMargin = 0;
+  let savings = 0;
+  let lowMargin = 0;
+
+  let hotelNames = [];
+  let margins = [];
+
+  rows.forEach(row => {
+    const [hotel, city, cost, sell, market] = row.split(",");
+
+    const margin = sell - cost;
+    totalMargin += margin;
+    totalRevenue += sell;
+
+    if (margin < 15) lowMargin++;
+
+    if (market < cost) {
+      savings += (cost - market);
+    }
+
+    hotelNames.push(hotel);
+    margins.push(margin);
+  });
 
   document.getElementById("output").innerHTML = `
-    <h2>🌏 Thailand Market Analysis</h2>
+    <h2>🌏 Thailand Market Analysis (LIVE)</h2>
 
     <div class="card-container">
-      <div class="card"><b>Revenue</b><br>£120,000</div>
-      <div class="card green"><b>Savings</b><br>£18,200</div>
-      <div class="card red"><b>Low Margin</b><br>9 Bookings</div>
+      <div class="card"><b>Revenue</b><br>£${totalRevenue}</div>
+      <div class="card green"><b>Savings</b><br>£${savings}</div>
+      <div class="card red"><b>Low Margin</b><br>${lowMargin}</div>
     </div>
 
-    <h3>📊 Market Overview</h3>
-    <p>Strong demand in Bangkok & Phuket. Pricing upside identified in premium segments.</p>
-
-    <h3>💡 Opportunities</h3>
-    <ul>
-      <li class="green">Rebook Phuket hotels → £2,300 saving</li>
-      <li class="yellow">Increase Bangkok pricing → +18%</li>
-      <li>Push Chiang Mai for occupancy</li>
-    </ul>
-
-    <h3>📋 Action Plan</h3>
-    <ul>
-      <li>Renegotiate Phuket supplier contracts</li>
-      <li>Increase pricing in Bangkok</li>
-      <li>Reallocate inventory to high demand areas</li>
-    </ul>
-
-    <h3>📧 Outreach</h3>
-    <p><b>Subject:</b> Thailand Partnership Opportunity<br><br>
-    Dear Partner,<br><br>
-    We are reviewing supplier agreements in Thailand and would like to discuss improved rates and long-term collaboration.<br><br>
-    ORN Product Team</p>
+    <h3>📊 Insight</h3>
+    <p>Data shows strong pricing opportunity and supplier optimisation potential.</p>
   `;
+
+  drawChart(hotelNames, margins);
 }
 
-function showMargin() {
-  think("Great question — reviewing margin performance across all bookings...");
+function drawChart(labels, data) {
 
-  document.getElementById("output").innerHTML = `
-    <h2>📉 Margin Performance</h2>
+  const ctx = document.getElementById('chart').getContext('2d');
 
-    <div class="card-container">
-      <div class="card red"><b>Low Margin</b><br>9 Bookings</div>
-      <div class="card"><b>Avg Margin</b><br>18%</div>
-      <div class="card yellow"><b>Target</b><br>25%</div>
-    </div>
+  if (window.myChart) {
+    window.myChart.destroy();
+  }
 
-    <ul>
-      <li>Phuket Beach Resort → Low margin</li>
-      <li>Pattaya Budget → Underperforming</li>
-      <li>Chiang Mai Lodge → Pricing too low</li>
-    </ul>
-  `;
-}
-
-function showOpportunities() {
-  think("Let me highlight the biggest growth opportunities...");
-
-  document.getElementById("output").innerHTML = `
-    <h2>📈 Growth Opportunities</h2>
-
-    <ul>
-      <li>Increase Bangkok pricing by 18%</li>
-      <li>Rebook suppliers in Phuket → £2,300 saving</li>
-      <li>Expand premium product offering</li>
-    </ul>
-  `;
-}
-
-function showSuppliers() {
-  think("Reviewing supplier performance and contract opportunities...");
-
-  document.getElementById("output").innerHTML = `
-    <h2>🏨 Supplier Analysis</h2>
-
-    <ul>
-      <li>Phuket suppliers overpriced vs market</li>
-      <li>Bangkok suppliers competitive</li>
-      <li>Krabi contracts need renegotiation</li>
-    </ul>
-  `;
+  window.myChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Margin per Hotel (£)',
+        data: data
+      }]
+    }
+  });
 }
 
 </script>
