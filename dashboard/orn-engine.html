@@ -1,73 +1,178 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>ORN AI Engine</title>
+  <title>ORN Product – AI Command Engine</title>
+
   <style>
-    body { font-family: Arial; padding:20px; background:#f5f5f5; }
-    input, button { padding:10px; font-size:16px; }
-    .output { margin-top:20px; background:white; padding:20px; border-radius:10px; }
-    .green { color:green; }
-    .red { color:red; }
-    .yellow { color:#c9a000; }
+    body {
+      font-family: Arial;
+      background: linear-gradient(to right, #f5f7fa, #e4ecf7);
+      padding: 30px;
+    }
+
+    h1 {
+      color: #2c3e50;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    input {
+      padding: 12px;
+      width: 300px;
+      font-size: 16px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      padding: 12px 20px;
+      font-size: 16px;
+      background: #2c3e50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #1a252f;
+    }
+
+    .output {
+      margin-top: 30px;
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      border-left: 6px solid #2c3e50;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+    }
+
+    .green { color: green; }
+    .red { color: red; }
+    .yellow { color: #c9a000; }
+
+    h2 {
+      color: #2c3e50;
+      margin-top: 20px;
+    }
   </style>
 </head>
 
 <body>
 
-<h1>ORN Product – AI Command Engine</h1>
+<div class="header">
+  <img src="../branding/logo.jpg" width="60">
+  <h1>ORN Product – AI Command Engine</h1>
+</div>
+
+<br>
 
 <input id="command" placeholder="Type command e.g. Launch Thailand">
 <button onclick="runCommand()">Run</button>
 
-<div class="output" id="output"></div>
+<div class="output" id="output">
+  <p>Enter a command to launch a market...</p>
+</div>
 
 <script>
 
 function runCommand() {
-  const cmd = document.getElementById("command").value;
+  const cmd = document.getElementById("command").value.toLowerCase();
 
-  if (cmd.toLowerCase().includes("thailand")) {
-
-    document.getElementById("output").innerHTML = `
-      <h2>🌏 Thailand Market Launched</h2>
-
-      <h3>📊 Market Analysis</h3>
-      <p>High demand in Bangkok & Phuket. Strong seasonal pricing opportunities.</p>
-
-      <h3>💰 Revenue Insights</h3>
-      <p class="green">Savings Identified: £18,200</p>
-      <p class="red">Low Margin Bookings: 9</p>
-
-      <h3>💡 Opportunities</h3>
-      <ul>
-        <li class="green">Rebook Phuket hotels → Save £2,300</li>
-        <li class="yellow">Increase Bangkok pricing → +18%</li>
-        <li class="red">Low margin Chiang Mai bookings</li>
-      </ul>
-
-      <h3>📋 Action Plan</h3>
-      <ul>
-        <li>Renegotiate supplier contracts</li>
-        <li>Increase pricing in high demand areas</li>
-        <li>Push sales for low occupancy dates</li>
-      </ul>
-
-      <h3>✅ Task List</h3>
-      <ul>
-        <li>Contact Phuket hotels</li>
-        <li>Adjust Bangkok pricing</li>
-        <li>Review Chiang Mai contracts</li>
-      </ul>
-
-      <h3>📧 Outreach Email</h3>
-      <p>
-      Subject: Partnership Opportunity – Thailand<br><br>
-      Dear Partner,<br><br>
-      We are expanding into Thailand and would like to discuss improved rates and long-term collaboration.<br><br>
-      ORN Product Team
-      </p>
-    `;
+  if (cmd.includes("thailand")) {
+    runThailand();
   }
+  else if (cmd.includes("uae")) {
+    runUAE();
+  }
+  else if (cmd.includes("london")) {
+    runLondon();
+  }
+  else {
+    document.getElementById("output").innerHTML = "<p>Command not recognised. Try: Launch Thailand</p>";
+  }
+}
+
+function runThailand() {
+  document.getElementById("output").innerHTML = `
+    <h2>🌏 Thailand Market Launched</h2>
+
+    <h3>📊 Market Analysis</h3>
+    <p>High demand in Bangkok & Phuket. Strong seasonal pricing opportunities.</p>
+
+    <h3>💰 Revenue Insights</h3>
+    <p class="green">Savings Identified: £18,200</p>
+    <p class="red">Low Margin Bookings: 9</p>
+
+    <h3>💡 Opportunities</h3>
+    <ul>
+      <li class="green">Rebook Phuket hotels → Save £2,300</li>
+      <li class="yellow">Increase Bangkok pricing → +18%</li>
+      <li class="red">Low margin Chiang Mai bookings</li>
+    </ul>
+
+    <h3>📋 Action Plan</h3>
+    <ul>
+      <li>Renegotiate supplier contracts</li>
+      <li>Increase pricing in high demand areas</li>
+      <li>Push sales for low occupancy dates</li>
+    </ul>
+
+    <h3>✅ Task List</h3>
+    <ul>
+      <li>Contact Phuket hotels</li>
+      <li>Adjust Bangkok pricing</li>
+      <li>Review Chiang Mai contracts</li>
+    </ul>
+
+    <h3>📧 Outreach Email</h3>
+    <p>
+    <b>Subject:</b> Partnership Opportunity – Thailand<br><br>
+    Dear Partner,<br><br>
+    We are expanding into Thailand and would like to discuss improved rates and long-term collaboration.<br><br>
+    ORN Product Team
+    </p>
+  `;
+}
+
+function runUAE() {
+  document.getElementById("output").innerHTML = `
+    <h2>🌍 UAE Market Launched</h2>
+
+    <h3>📊 Market Analysis</h3>
+    <p>Luxury demand strong in Dubai & Abu Dhabi.</p>
+
+    <h3>💰 Revenue Insights</h3>
+    <p class="green">Revenue Opportunity: £25,000+</p>
+
+    <h3>📋 Action Plan</h3>
+    <ul>
+      <li>Target luxury hotel partnerships</li>
+      <li>Increase premium pricing strategy</li>
+    </ul>
+  `;
+}
+
+function runLondon() {
+  document.getElementById("output").innerHTML = `
+    <h2>🇬🇧 London Market Launched</h2>
+
+    <h3>📊 Market Analysis</h3>
+    <p>High corporate demand and strong midweek occupancy.</p>
+
+    <h3>💡 Opportunity</h3>
+    <p class="yellow">Pricing opportunity across business hotels</p>
+
+    <h3>📋 Action Plan</h3>
+    <ul>
+      <li>Increase weekday pricing</li>
+      <li>Focus on corporate clients</li>
+    </ul>
+  `;
 }
 
 </script>
