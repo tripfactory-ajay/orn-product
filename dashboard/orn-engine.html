@@ -1,163 +1,281 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>ORN Product – KPI Revenue Engine</title>
+  <title>ORN Product – ARA Agents Platform</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
-    body { font-family: Arial; background:#f5f7fa; padding:30px; }
+    body {
+      margin:0;
+      font-family: 'Segoe UI', Arial;
+      background:#f4f7fb;
+    }
 
-    .header { display:flex; align-items:center; gap:15px; }
+    .layout { display:flex; }
 
-    input { padding:12px; width:350px; }
-    button { padding:12px 20px; background:#2c3e50; color:white; border:none; }
+    .sidebar {
+      width:240px;
+      background:#ffffff;
+      height:100vh;
+      border-right:1px solid #e6e6e6;
+      padding:20px;
+    }
 
-    .output { margin-top:20px; background:white; padding:25px; border-radius:10px; }
+    .logo {
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
 
-    .cards { display:flex; gap:15px; margin-top:20px; }
+    .logo img { width:50px; }
+
+    .logo h2 { margin:0; font-size:18px; }
+
+    .tag {
+      font-size:12px;
+      color:#888;
+    }
+
+    .menu {
+      margin-top:30px;
+    }
+
+    .menu div {
+      padding:10px;
+      border-radius:6px;
+      cursor:pointer;
+    }
+
+    .menu div:hover {
+      background:#f0f4f8;
+    }
+
+    .main {
+      flex:1;
+      padding:30px;
+    }
+
+    .topbar {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+
+    input {
+      padding:10px;
+      width:280px;
+      border-radius:6px;
+      border:1px solid #ccc;
+    }
+
+    button {
+      padding:10px 15px;
+      background:#2c3e50;
+      color:white;
+      border:none;
+      border-radius:6px;
+      cursor:pointer;
+    }
+
+    .cards {
+      display:flex;
+      gap:15px;
+      margin-top:25px;
+    }
 
     .card {
       flex:1;
-      padding:20px;
-      border-radius:10px;
       background:white;
-      text-align:center;
-      box-shadow:0 2px 6px rgba(0,0,0,0.1);
+      padding:20px;
+      border-radius:12px;
+      box-shadow:0 3px 8px rgba(0,0,0,0.05);
     }
 
-    .green { color:green; }
-    .red { color:red; }
-    .yellow { color:#c9a000; }
+    canvas { margin-top:30px; }
 
-    #chat { margin-top:10px; font-style:italic; }
+    .chat-panel {
+      position:fixed;
+      right:0;
+      top:0;
+      width:340px;
+      height:100%;
+      background:white;
+      border-left:1px solid #eee;
+      padding:20px;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .chat-header {
+      font-weight:bold;
+      margin-bottom:10px;
+    }
+
+    .chat-box {
+      flex:1;
+      overflow:auto;
+    }
+
+    .chat-msg {
+      margin:10px 0;
+      padding:10px;
+      border-radius:8px;
+    }
+
+    .ai {
+      background:#eef3f8;
+    }
+
+    .user {
+      background:#d9ecff;
+      text-align:right;
+    }
+
   </style>
 </head>
 
 <body>
 
-<div class="header">
-  <img src="../branding/logo.jpg" width="60">
-  <h1>ORN Product – KPI Revenue Engine</h1>
+<div class="layout">
+
+  <div class="sidebar">
+    <div class="logo">
+      <img src="../branding/logo.jpg">
+      <div>
+        <h2>ORN Product</h2>
+        <div class="tag">Powered by ARA Agents™</div>
+      </div>
+    </div>
+
+    <div class="menu">
+      <div onclick="runAnalysis()">Dashboard</div>
+      <div>Markets</div>
+      <div>Bookings</div>
+      <div>Suppliers</div>
+      <div>ARA Agents</div>
+    </div>
+  </div>
+
+  <div class="main">
+
+    <div class="topbar">
+      <h1>Revenue Intelligence Platform</h1>
+      <div>
+        <input id="command" placeholder="Launch Thailand / Ask ARA Agents">
+        <button onclick="runAnalysis()">Run</button>
+      </div>
+    </div>
+
+    <div class="cards">
+      <div class="card"><b>Total Revenue</b><br><span id="rev">-</span></div>
+      <div class="card"><b>Total Profit</b><br><span id="profit">-</span></div>
+      <div class="card"><b>Margin %</b><br><span id="margin">-</span></div>
+    </div>
+
+    <canvas id="chart"></canvas>
+
+  </div>
+
 </div>
 
-<br>
+<div class="chat-panel">
 
-<input id="command" placeholder="Ask ORN e.g. Launch Thailand">
-<button onclick="runCommand()">Run</button>
+  <div class="chat-header">🤖 ARA Agents</div>
 
-<div id="chat"></div>
+  <div class="chat-box" id="chatBox">
+    <div class="chat-msg ai">
+      ARA Commercial Agent: Reviewing performance. Would you like margin insights or pricing opportunities?
+    </div>
+  </div>
 
-<div class="output" id="output"></div>
+  <input id="chatInput" placeholder="Ask ARA Agents..." onkeydown="chatEnter(event)">
 
-<canvas id="revenueChart"></canvas>
-<canvas id="forecastChart"></canvas>
+</div>
 
 <script>
 
-function think(msg){
-  document.getElementById("chat").innerHTML = msg;
+function addChat(msg,type="ai"){
+  const box = document.getElementById("chatBox");
+  const div = document.createElement("div");
+  div.className = "chat-msg "+type;
+  div.innerText = msg;
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
 }
 
-async function runCommand(){
-  think("Running full commercial analysis...");
+function chatEnter(e){
+  if(e.key==="Enter"){
+    const val = document.getElementById("chatInput").value;
+    addChat(val,"user");
 
-  setTimeout(()=>{
-    runFullAnalysis();
-  },1500);
+    setTimeout(()=>{ respondARA(val); },1000);
+  }
 }
 
-async function runFullAnalysis(){
+function respondARA(input){
+  let response = "ARA Agent: Let me review that further.";
 
-  // LOAD HOTELS
-  const hotelRes = await fetch("../data/thailand-hotels.csv");
-  const hotelText = await hotelRes.text();
-  const hotelRows = hotelText.split("\n").slice(1);
+  if(input.includes("margin")){
+    response = "ARA Commercial Agent: Margin below target in Phuket. Suggest renegotiation.";
+  }
 
-  // LOAD BOOKINGS
-  const bookingRes = await fetch("../data/thailand-bookings.csv");
-  const bookingText = await bookingRes.text();
-  const bookingRows = bookingText.split("\n").slice(1);
+  if(input.includes("opportunity")){
+    response = "ARA Revenue Agent: Bangkok pricing uplift opportunity of +18%.";
+  }
 
-  let totalRevenue = 0;
-  let totalCost = 0;
-  let totalProfit = 0;
+  if(input.includes("supplier")){
+    response = "ARA Contracting Agent: Phuket suppliers overpriced vs market.";
+  }
 
-  let monthlyRevenue = [];
+  addChat(response,"ai");
+}
 
-  bookingRows.forEach(row=>{
-    const [id,hotel,city,date,nights,rooms,cost,sell] = row.split(",");
+async function runAnalysis(){
 
-    const rev = sell * nights * rooms;
-    const cst = cost * nights * rooms;
+  addChat("ARA System: Running full commercial analysis...");
 
-    totalRevenue += rev;
-    totalCost += cst;
-    totalProfit += (rev - cst);
+  const res = await fetch("../data/thailand-bookings.csv");
+  const text = await res.text();
+  const rows = text.split("\n").slice(1);
 
-    monthlyRevenue.push(rev);
+  let revenue=0, cost=0;
+
+  rows.forEach(r=>{
+    const [id,h,c,d,n,rooms,costP,sellP] = r.split(",");
+    revenue += sellP*n*rooms;
+    cost += costP*n*rooms;
   });
 
-  const margin = ((totalProfit / totalRevenue) * 100).toFixed(1);
+  const profit = revenue - cost;
+  const margin = ((profit/revenue)*100).toFixed(1);
 
-  // FORECAST (simple projection)
-  const forecast = monthlyRevenue.map(v => v * 1.2);
+  document.getElementById("rev").innerText = "£"+Math.round(revenue);
+  document.getElementById("profit").innerText = "£"+Math.round(profit);
+  document.getElementById("margin").innerText = margin+"%";
 
-  document.getElementById("output").innerHTML = `
-    <h2>📊 ORN KPI Dashboard</h2>
-
-    <div class="cards">
-      <div class="card"><b>Revenue</b><br>£${Math.round(totalRevenue)}</div>
-      <div class="card green"><b>Profit</b><br>£${Math.round(totalProfit)}</div>
-      <div class="card yellow"><b>Margin</b><br>${margin}%</div>
-    </div>
-
-    <h3>📈 Insights</h3>
-    <ul>
-      <li>Strong performance in Bangkok</li>
-      <li>Phuket underperforming margin</li>
-      <li>Opportunity to increase pricing</li>
-    </ul>
-
-    <h3>📋 Actions</h3>
-    <ul>
-      <li>Increase pricing 10–15%</li>
-      <li>Renegotiate supplier rates</li>
-      <li>Push low occupancy regions</li>
-    </ul>
-  `;
-
-  drawRevenueChart(monthlyRevenue);
-  drawForecastChart(forecast);
+  drawChart(rows);
 }
 
-function drawRevenueChart(data){
-  const ctx = document.getElementById('revenueChart');
+function drawChart(rows){
 
-  if(window.revChart) window.revChart.destroy();
+  let labels=[], data=[];
 
-  window.revChart = new Chart(ctx,{
-    type:'line',
-    data:{
-      labels:["B1","B2","B3","B4","B5","B6","B7","B8","B9","B10"],
-      datasets:[{
-        label:"Revenue per Booking",
-        data:data
-      }]
-    }
+  rows.forEach(r=>{
+    const [id,h,c,d,n,rooms,costP,sellP] = r.split(",");
+    labels.push(h);
+    data.push((sellP-costP));
   });
-}
 
-function drawForecastChart(data){
-  const ctx = document.getElementById('forecastChart');
+  const ctx = document.getElementById("chart");
 
-  if(window.fcChart) window.fcChart.destroy();
+  if(window.chart) window.chart.destroy();
 
-  window.fcChart = new Chart(ctx,{
+  window.chart = new Chart(ctx,{
     type:'bar',
     data:{
-      labels:["F1","F2","F3","F4","F5","F6","F7","F8","F9","F10"],
+      labels:labels,
       datasets:[{
-        label:"Forecast Revenue",
+        label:"Margin per Booking (£)",
         data:data
       }]
     }
