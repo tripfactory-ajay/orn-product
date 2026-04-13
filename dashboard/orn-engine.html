@@ -19,50 +19,13 @@
       background:#020617;
       height:100vh;
       padding:20px;
-      border-right:1px solid #1e293b;
     }
 
     .sidebar img { width:50px; }
 
-    .menu div {
-      padding:10px;
-      margin-top:10px;
-      color:#94a3b8;
-      cursor:pointer;
-      border-radius:6px;
-    }
-
-    .menu div:hover {
-      background:#1e293b;
-      color:white;
-    }
-
     .main {
       flex:1;
       padding:25px;
-    }
-
-    .topbar {
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-    }
-
-    input {
-      padding:10px;
-      width:260px;
-      border-radius:6px;
-      border:none;
-      outline:none;
-    }
-
-    button {
-      padding:10px 15px;
-      background:#3b82f6;
-      color:white;
-      border:none;
-      border-radius:6px;
-      cursor:pointer;
     }
 
     .cards {
@@ -76,49 +39,29 @@
       background:#020617;
       padding:20px;
       border-radius:10px;
-      border:1px solid #1e293b;
       text-align:center;
     }
 
     canvas { margin-top:30px; }
 
-    /* CHAT */
-    .chat-panel {
+    .chat {
       position:fixed;
       right:20px;
       bottom:20px;
       width:320px;
-      height:75%;
+      height:70%;
       background:#020617;
-      border:1px solid #1e293b;
       border-radius:12px;
+      padding:15px;
       display:flex;
       flex-direction:column;
-      padding:15px;
     }
 
-    .chat-box {
-      flex:1;
-      overflow:auto;
-    }
+    .chat-box { flex:1; overflow:auto; }
 
-    .chat-msg {
-      margin:8px 0;
-      padding:10px;
-      border-radius:8px;
-      font-size:14px;
-    }
-
+    .msg { margin:5px; padding:8px; border-radius:6px; }
     .ai { background:#1e293b; }
     .user { background:#3b82f6; text-align:right; }
-
-    #chatInput {
-      margin-top:10px;
-      padding:10px;
-      border:none;
-      border-radius:6px;
-      outline:none;
-    }
 
   </style>
 </head>
@@ -127,33 +70,20 @@
 
 <div class="layout">
 
-  <!-- SIDEBAR -->
   <div class="sidebar">
     <img src="/orn-product/branding/logo.jpg">
     <h3>ORN Product</h3>
     <small>ARA Agents™</small>
-
-    <div class="menu">
-      <div onclick="runAnalysis()">Dashboard</div>
-    </div>
   </div>
 
-  <!-- MAIN -->
   <div class="main">
 
-    <div class="topbar">
-      <h1>AI Revenue Intelligence</h1>
-      <div>
-        <input id="command" placeholder="Launch Thailand">
-        <button onclick="runAnalysis()">Run</button>
-      </div>
-    </div>
+    <h1>AI Revenue Intelligence</h1>
 
-    <!-- KPI -->
     <div class="cards">
-      <div class="card"><b>Revenue</b><br><span id="rev">-</span></div>
-      <div class="card"><b>Profit</b><br><span id="profit">-</span></div>
-      <div class="card"><b>Margin</b><br><span id="margin">-</span></div>
+      <div class="card">Revenue<br><span id="rev">-</span></div>
+      <div class="card">Profit<br><span id="profit">-</span></div>
+      <div class="card">Margin<br><span id="margin">-</span></div>
     </div>
 
     <canvas id="chart"></canvas>
@@ -162,122 +92,89 @@
 
 </div>
 
-<!-- CHAT -->
-<div class="chat-panel">
-
+<div class="chat">
   <div class="chat-box" id="chatBox">
-    <div class="chat-msg ai">
-      ARA Agent: Ready. Type "Launch Thailand"
-    </div>
+    <div class="msg ai">ARA Coordinator: Ready. Type “Launch Thailand”.</div>
   </div>
 
-  <input id="chatInput" placeholder="Ask..." onkeydown="chatEnter(event)">
-
+  <input id="chatInput" onkeydown="chatEnter(event)" placeholder="Ask...">
 </div>
 
 <script>
 
-// CHAT
 function addMsg(text,type){
   const box=document.getElementById("chatBox");
   const div=document.createElement("div");
-  div.className="chat-msg "+type;
+  div.className="msg "+type;
   div.innerText=text;
   box.appendChild(div);
-  box.scrollTop = box.scrollHeight;
 }
 
 function chatEnter(e){
   if(e.key==="Enter"){
     const val=document.getElementById("chatInput").value;
     addMsg(val,"user");
-
     handleCommand(val);
-
     document.getElementById("chatInput").value="";
   }
 }
 
-// BUTTON
-function runAnalysis(){
-  const cmd = document.getElementById("command").value || "Launch Thailand";
-  handleCommand(cmd);
-}
-
-// COMMAND ROUTER
 function handleCommand(cmd){
 
-  if(!cmd) return;
+  addMsg("ARA Coordinator: Reviewing with team...","ai");
 
-  addMsg("ARA System: Processing...","ai");
-
-  const lower = cmd.toLowerCase();
-
-  if(lower.includes("thailand")){
-    runThailand();
-  }
-  else if(lower.includes("margin")){
-    addMsg("ARA Agent: Margin low in Phuket.","ai");
-  }
-  else if(lower.includes("opportunity")){
-    addMsg("ARA Agent: Bangkok pricing +18%.","ai");
-  }
-  else{
-    addMsg("ARA Agent: Try 'Launch Thailand'","ai");
+  if(cmd.toLowerCase().includes("thailand")){
+    runTeam();
   }
 }
 
-// MAIN ANALYSIS
-async function runThailand(){
+async function runTeam(){
 
-  try {
+  addMsg("ARA Product Agent: Demand strong in Bangkok.","ai");
 
-    addMsg("ARA Analyst: Loading data...","ai");
+  setTimeout(()=>{
+    addMsg("ARA Commercial Agent: Margin underperforming in Phuket.","ai");
+  },1000);
 
-    const res = await fetch("/orn-product/data/thailand-bookings.csv");
+  setTimeout(()=>{
+    addMsg("ARA Contracting Agent: Supplier costs above market.","ai");
+  },2000);
 
-    if(!res.ok) throw new Error("CSV missing");
+  setTimeout(()=>{
+    runData();
+  },3000);
 
-    const text = await res.text();
-
-    const rows = text.split("\n").filter(r => r.trim() !== "").slice(1);
-
-    let revenue=0;
-    let cost=0;
-
-    rows.forEach(r=>{
-      const c=r.split(",");
-      if(c.length<8) return;
-
-      const nights = Number(c[4]);
-      const rooms = Number(c[5]);
-      const costP = Number(c[6]);
-      const sellP = Number(c[7]);
-
-      if(isNaN(nights) || isNaN(rooms)) return;
-
-      revenue += sellP * nights * rooms;
-      cost += costP * nights * rooms;
-    });
-
-    const profit = revenue - cost;
-    const margin = revenue ? ((profit/revenue)*100).toFixed(1) : 0;
-
-    document.getElementById("rev").innerText="£"+Math.round(revenue);
-    document.getElementById("profit").innerText="£"+Math.round(profit);
-    document.getElementById("margin").innerText=margin+"%";
-
-    drawChart(rows);
-
-    addMsg("ARA Analyst: Analysis complete.","ai");
-
-  } catch(err){
-    addMsg("ERROR: Cannot load data.","ai");
-    console.error(err);
-  }
 }
 
-// CHART
+async function runData(){
+
+  const res = await fetch("/orn-product/data/thailand-bookings.csv");
+  const text = await res.text();
+
+  const rows = text.split("\n").slice(1);
+
+  let revenue=0, cost=0;
+
+  rows.forEach(r=>{
+    const c=r.split(",");
+    if(c.length<8) return;
+
+    revenue += c[7]*c[4]*c[5];
+    cost += c[6]*c[4]*c[5];
+  });
+
+  const profit=revenue-cost;
+  const margin=((profit/revenue)*100).toFixed(1);
+
+  document.getElementById("rev").innerText="£"+Math.round(revenue);
+  document.getElementById("profit").innerText="£"+Math.round(profit);
+  document.getElementById("margin").innerText=margin+"%";
+
+  drawChart(rows);
+
+  addMsg("ARA Coordinator: Increase pricing + renegotiate suppliers.","ai");
+}
+
 function drawChart(rows){
 
   let labels=[], data=[];
@@ -285,24 +182,13 @@ function drawChart(rows){
   rows.forEach(r=>{
     const c=r.split(",");
     if(c.length<8) return;
-
     labels.push(c[1]);
-    data.push(Number(c[7]) - Number(c[6]));
+    data.push(c[7]-c[6]);
   });
 
-  const ctx=document.getElementById("chart");
-
-  if(window.chart) window.chart.destroy();
-
-  window.chart=new Chart(ctx,{
+  new Chart(document.getElementById("chart"),{
     type:"bar",
-    data:{
-      labels:labels,
-      datasets:[{
-        label:"Margin",
-        data:data
-      }]
-    }
+    data:{ labels:labels, datasets:[{label:"Margin",data:data}] }
   });
 }
 
