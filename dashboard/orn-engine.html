@@ -8,51 +8,40 @@
     body {
       margin:0;
       font-family: 'Segoe UI', Arial;
-      background:#f4f7fb;
+      background:#0f172a;
+      color:white;
     }
 
     .layout { display:flex; }
 
     .sidebar {
-      width:240px;
-      background:#ffffff;
+      width:220px;
+      background:#020617;
       height:100vh;
-      border-right:1px solid #e6e6e6;
       padding:20px;
+      border-right:1px solid #1e293b;
     }
 
-    .logo {
-      display:flex;
-      align-items:center;
-      gap:10px;
-    }
+    .sidebar img { width:50px; }
 
-    .logo img { width:50px; }
-
-    .logo h2 { margin:0; font-size:18px; }
-
-    .tag {
-      font-size:12px;
-      color:#888;
-    }
-
-    .menu {
-      margin-top:30px;
-    }
+    .sidebar h3 { margin:10px 0 0; }
 
     .menu div {
-      padding:10px;
+      padding:12px;
+      margin-top:10px;
       border-radius:6px;
       cursor:pointer;
+      color:#94a3b8;
     }
 
     .menu div:hover {
-      background:#f0f4f8;
+      background:#1e293b;
+      color:white;
     }
 
     .main {
       flex:1;
-      padding:30px;
+      padding:25px;
     }
 
     .topbar {
@@ -63,47 +52,65 @@
 
     input {
       padding:10px;
-      width:280px;
+      width:260px;
       border-radius:6px;
-      border:1px solid #ccc;
+      border:none;
+      outline:none;
     }
 
     button {
       padding:10px 15px;
-      background:#2c3e50;
+      background:#3b82f6;
       color:white;
       border:none;
       border-radius:6px;
       cursor:pointer;
+      box-shadow:0 0 10px rgba(59,130,246,0.5);
     }
 
     .cards {
       display:flex;
       gap:15px;
-      margin-top:25px;
+      margin-top:20px;
     }
 
     .card {
       flex:1;
-      background:white;
+      background:#020617;
       padding:20px;
-      border-radius:12px;
-      box-shadow:0 3px 8px rgba(0,0,0,0.05);
+      border-radius:10px;
+      border:1px solid #1e293b;
+      text-align:center;
     }
 
-    canvas { margin-top:30px; }
+    .card b {
+      color:#94a3b8;
+      font-size:14px;
+    }
 
+    .card span {
+      font-size:22px;
+      display:block;
+      margin-top:5px;
+    }
+
+    canvas {
+      margin-top:30px;
+    }
+
+    /* CHAT PANEL */
     .chat-panel {
       position:fixed;
-      right:0;
-      top:0;
-      width:340px;
-      height:100%;
-      background:white;
-      border-left:1px solid #eee;
-      padding:20px;
+      right:20px;
+      bottom:20px;
+      width:320px;
+      height:75%;
+      background:#020617;
+      border:1px solid #1e293b;
+      border-radius:12px;
       display:flex;
       flex-direction:column;
+      padding:15px;
     }
 
     .chat-header {
@@ -117,18 +124,27 @@
     }
 
     .chat-msg {
-      margin:10px 0;
+      margin:8px 0;
       padding:10px;
       border-radius:8px;
+      font-size:14px;
     }
 
     .ai {
-      background:#eef3f8;
+      background:#1e293b;
     }
 
     .user {
-      background:#d9ecff;
+      background:#3b82f6;
       text-align:right;
+    }
+
+    #chatInput {
+      margin-top:10px;
+      padding:10px;
+      border:none;
+      border-radius:6px;
+      outline:none;
     }
 
   </style>
@@ -138,38 +154,36 @@
 
 <div class="layout">
 
+  <!-- SIDEBAR -->
   <div class="sidebar">
-    <div class="logo">
-      <img src="../branding/logo.jpg">
-      <div>
-        <h2>ORN Product</h2>
-        <div class="tag">Powered by ARA Agents™</div>
-      </div>
-    </div>
+    <img src="../branding/logo.jpg">
+    <h3>ORN Product</h3>
+    <small>ARA Agents™</small>
 
     <div class="menu">
       <div onclick="runAnalysis()">Dashboard</div>
       <div>Markets</div>
       <div>Bookings</div>
       <div>Suppliers</div>
-      <div>ARA Agents</div>
     </div>
   </div>
 
+  <!-- MAIN -->
   <div class="main">
 
     <div class="topbar">
-      <h1>Revenue Intelligence Platform</h1>
+      <h1>AI Revenue Intelligence</h1>
       <div>
-        <input id="command" placeholder="Launch Thailand / Ask ARA Agents">
+        <input id="command" placeholder="Launch Thailand">
         <button onclick="runAnalysis()">Run</button>
       </div>
     </div>
 
+    <!-- KPI CARDS -->
     <div class="cards">
-      <div class="card"><b>Total Revenue</b><br><span id="rev">-</span></div>
-      <div class="card"><b>Total Profit</b><br><span id="profit">-</span></div>
-      <div class="card"><b>Margin %</b><br><span id="margin">-</span></div>
+      <div class="card"><b>Total Revenue</b><span id="rev">-</span></div>
+      <div class="card"><b>Total Profit</b><span id="profit">-</span></div>
+      <div class="card"><b>Margin %</b><span id="margin">-</span></div>
     </div>
 
     <canvas id="chart"></canvas>
@@ -178,13 +192,14 @@
 
 </div>
 
+<!-- CHAT PANEL -->
 <div class="chat-panel">
 
   <div class="chat-header">🤖 ARA Agents</div>
 
   <div class="chat-box" id="chatBox">
     <div class="chat-msg ai">
-      ARA Commercial Agent: Reviewing performance. Would you like margin insights or pricing opportunities?
+      ARA Agent: Ready. Ask me about pricing, margin, bookings or suppliers.
     </div>
   </div>
 
@@ -208,31 +223,36 @@ function chatEnter(e){
     const val = document.getElementById("chatInput").value;
     addChat(val,"user");
 
-    setTimeout(()=>{ respondARA(val); },1000);
+    handleCommand(val);
+
+    document.getElementById("chatInput").value="";
   }
 }
 
-function respondARA(input){
-  let response = "ARA Agent: Let me review that further.";
-
-  if(input.includes("margin")){
-    response = "ARA Commercial Agent: Margin below target in Phuket. Suggest renegotiation.";
-  }
-
-  if(input.includes("opportunity")){
-    response = "ARA Revenue Agent: Bangkok pricing uplift opportunity of +18%.";
-  }
-
-  if(input.includes("supplier")){
-    response = "ARA Contracting Agent: Phuket suppliers overpriced vs market.";
-  }
-
-  addChat(response,"ai");
+function runAnalysis(){
+  const cmd = document.getElementById("command").value;
+  handleCommand(cmd);
 }
 
-async function runAnalysis(){
+function handleCommand(cmd){
 
-  addChat("ARA System: Running full commercial analysis...");
+  addChat("ARA System: Analysing...");
+
+  if(cmd.toLowerCase().includes("thailand")){
+    runThailand();
+  }
+  else if(cmd.toLowerCase().includes("margin")){
+    addChat("ARA Commercial Agent: Margin issues in Phuket. Recommend renegotiation.");
+  }
+  else if(cmd.toLowerCase().includes("opportunity")){
+    addChat("ARA Revenue Agent: Bangkok pricing uplift opportunity +18%.");
+  }
+  else{
+    addChat("ARA Agent: Can you clarify if this relates to pricing, margin or suppliers?");
+  }
+}
+
+async function runThailand(){
 
   const res = await fetch("../data/thailand-bookings.csv");
   const text = await res.text();
@@ -254,6 +274,8 @@ async function runAnalysis(){
   document.getElementById("margin").innerText = margin+"%";
 
   drawChart(rows);
+
+  addChat("ARA Analyst: Thailand shows strong revenue but margin gaps in Phuket.");
 }
 
 function drawChart(rows){
