@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>ORN Product – AI Command Engine</title>
+  <title>ORN Product – AI Contracting Engine</title>
 
   <style>
     body {
@@ -22,9 +22,9 @@
 
     input {
       padding: 12px;
-      width: 300px;
+      width: 350px;
       font-size: 16px;
-      border-radius: 5px;
+      border-radius: 6px;
       border: 1px solid #ccc;
     }
 
@@ -34,7 +34,7 @@
       background: #2c3e50;
       color: white;
       border: none;
-      border-radius: 5px;
+      border-radius: 6px;
       cursor: pointer;
     }
 
@@ -43,7 +43,7 @@
     }
 
     .output {
-      margin-top: 30px;
+      margin-top: 25px;
       background: white;
       padding: 25px;
       border-radius: 10px;
@@ -51,13 +51,29 @@
       box-shadow: 0 3px 8px rgba(0,0,0,0.1);
     }
 
+    .card-container {
+      display: flex;
+      gap: 20px;
+      margin-top: 15px;
+    }
+
+    .card {
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 10px;
+      flex: 1;
+      text-align: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
     .green { color: green; }
     .red { color: red; }
     .yellow { color: #c9a000; }
 
-    h2 {
-      color: #2c3e50;
-      margin-top: 20px;
+    #chat {
+      margin-top: 15px;
+      font-style: italic;
+      color: #555;
     }
   </style>
 </head>
@@ -66,111 +82,133 @@
 
 <div class="header">
   <img src="../branding/logo.jpg" width="60">
-  <h1>ORN Product – AI Command Engine</h1>
+  <h1>ORN Product – AI Contracting Engine</h1>
 </div>
 
 <br>
 
-<input id="command" placeholder="Type command e.g. Launch Thailand">
+<input id="command" placeholder="Ask ORN e.g. Launch Thailand or Where are we losing money?">
 <button onclick="runCommand()">Run</button>
 
+<div id="chat"></div>
+
 <div class="output" id="output">
-  <p>Enter a command to launch a market...</p>
+  <p>Ask a question or launch a market...</p>
 </div>
 
 <script>
 
+function think(message) {
+  document.getElementById("chat").innerHTML = message;
+}
+
 function runCommand() {
   const cmd = document.getElementById("command").value.toLowerCase();
 
-  if (cmd.includes("thailand")) {
-    runThailand();
-  }
-  else if (cmd.includes("uae")) {
-    runUAE();
-  }
-  else if (cmd.includes("london")) {
-    runLondon();
-  }
-  else {
-    document.getElementById("output").innerHTML = "<p>Command not recognised. Try: Launch Thailand</p>";
-  }
+  think("Interesting… analysing that now...");
+
+  setTimeout(() => {
+
+    if (cmd.includes("thailand")) {
+      runThailand();
+    }
+    else if (cmd.includes("margin") || cmd.includes("losing")) {
+      showMargin();
+    }
+    else if (cmd.includes("opportunities") || cmd.includes("growth")) {
+      showOpportunities();
+    }
+    else if (cmd.includes("suppliers") || cmd.includes("contracts")) {
+      showSuppliers();
+    }
+    else {
+      think("Good question — are you looking at pricing, bookings, or supplier performance?");
+    }
+
+  }, 1500);
 }
 
 function runThailand() {
+  think("Thailand launched. Reviewing demand, pricing, and supplier performance...");
+
   document.getElementById("output").innerHTML = `
-    <h2>🌏 Thailand Market Launched</h2>
+    <h2>🌏 Thailand Market Analysis</h2>
 
-    <h3>📊 Market Analysis</h3>
-    <p>High demand in Bangkok & Phuket. Strong seasonal pricing opportunities.</p>
+    <div class="card-container">
+      <div class="card"><b>Revenue</b><br>£120,000</div>
+      <div class="card green"><b>Savings</b><br>£18,200</div>
+      <div class="card red"><b>Low Margin</b><br>9 Bookings</div>
+    </div>
 
-    <h3>💰 Revenue Insights</h3>
-    <p class="green">Savings Identified: £18,200</p>
-    <p class="red">Low Margin Bookings: 9</p>
+    <h3>📊 Market Overview</h3>
+    <p>Strong demand in Bangkok & Phuket. Pricing upside identified in premium segments.</p>
 
     <h3>💡 Opportunities</h3>
     <ul>
-      <li class="green">Rebook Phuket hotels → Save £2,300</li>
+      <li class="green">Rebook Phuket hotels → £2,300 saving</li>
       <li class="yellow">Increase Bangkok pricing → +18%</li>
-      <li class="red">Low margin Chiang Mai bookings</li>
+      <li>Push Chiang Mai for occupancy</li>
     </ul>
 
     <h3>📋 Action Plan</h3>
     <ul>
-      <li>Renegotiate supplier contracts</li>
-      <li>Increase pricing in high demand areas</li>
-      <li>Push sales for low occupancy dates</li>
+      <li>Renegotiate Phuket supplier contracts</li>
+      <li>Increase pricing in Bangkok</li>
+      <li>Reallocate inventory to high demand areas</li>
     </ul>
 
-    <h3>✅ Task List</h3>
-    <ul>
-      <li>Contact Phuket hotels</li>
-      <li>Adjust Bangkok pricing</li>
-      <li>Review Chiang Mai contracts</li>
-    </ul>
-
-    <h3>📧 Outreach Email</h3>
-    <p>
-    <b>Subject:</b> Partnership Opportunity – Thailand<br><br>
+    <h3>📧 Outreach</h3>
+    <p><b>Subject:</b> Thailand Partnership Opportunity<br><br>
     Dear Partner,<br><br>
-    We are expanding into Thailand and would like to discuss improved rates and long-term collaboration.<br><br>
-    ORN Product Team
-    </p>
+    We are reviewing supplier agreements in Thailand and would like to discuss improved rates and long-term collaboration.<br><br>
+    ORN Product Team</p>
   `;
 }
 
-function runUAE() {
+function showMargin() {
+  think("Great question — reviewing margin performance across all bookings...");
+
   document.getElementById("output").innerHTML = `
-    <h2>🌍 UAE Market Launched</h2>
+    <h2>📉 Margin Performance</h2>
 
-    <h3>📊 Market Analysis</h3>
-    <p>Luxury demand strong in Dubai & Abu Dhabi.</p>
+    <div class="card-container">
+      <div class="card red"><b>Low Margin</b><br>9 Bookings</div>
+      <div class="card"><b>Avg Margin</b><br>18%</div>
+      <div class="card yellow"><b>Target</b><br>25%</div>
+    </div>
 
-    <h3>💰 Revenue Insights</h3>
-    <p class="green">Revenue Opportunity: £25,000+</p>
-
-    <h3>📋 Action Plan</h3>
     <ul>
-      <li>Target luxury hotel partnerships</li>
-      <li>Increase premium pricing strategy</li>
+      <li>Phuket Beach Resort → Low margin</li>
+      <li>Pattaya Budget → Underperforming</li>
+      <li>Chiang Mai Lodge → Pricing too low</li>
     </ul>
   `;
 }
 
-function runLondon() {
+function showOpportunities() {
+  think("Let me highlight the biggest growth opportunities...");
+
   document.getElementById("output").innerHTML = `
-    <h2>🇬🇧 London Market Launched</h2>
+    <h2>📈 Growth Opportunities</h2>
 
-    <h3>📊 Market Analysis</h3>
-    <p>High corporate demand and strong midweek occupancy.</p>
-
-    <h3>💡 Opportunity</h3>
-    <p class="yellow">Pricing opportunity across business hotels</p>
-
-    <h3>📋 Action Plan</h3>
     <ul>
-      <li>Increase weekday pricing</li>
-      <li>Focus on corporate clients</li>
+      <li>Increase Bangkok pricing by 18%</li>
+      <li>Rebook suppliers in Phuket → £2,300 saving</li>
+      <li>Expand premium product offering</li>
+    </ul>
+  `;
+}
+
+function showSuppliers() {
+  think("Reviewing supplier performance and contract opportunities...");
+
+  document.getElementById("output").innerHTML = `
+    <h2>🏨 Supplier Analysis</h2>
+
+    <ul>
+      <li>Phuket suppliers overpriced vs market</li>
+      <li>Bangkok suppliers competitive</li>
+      <li>Krabi contracts need renegotiation</li>
     </ul>
   `;
 }
